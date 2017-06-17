@@ -1,0 +1,141 @@
+﻿import QtQuick 2.7
+import QtQuick.Controls 1.4
+import QtQuick.Layouts 1.0
+
+import SimpleDB 1.0
+
+Item {
+    id: db_editer
+
+    Component
+    {
+        id: columnComponent
+        TableViewColumn{width: 100 }
+    }
+
+    Component
+    {
+        id: elementComponent
+        ListElement{}
+    }
+
+    TableEditModel{
+        id:tableData
+    }
+
+    ListModel{
+        id:tableModel
+    }
+
+    Component {
+        id: editableDelegate
+        Item {
+
+            Text {
+                width: parent.width
+                anchors.margins: 4
+                anchors.left: parent.left
+                anchors.verticalCenter: parent.verticalCenter
+                elide: styleData.elideMode
+                text: styleData.value !== undefined ? styleData.value : ""
+                color: styleData.textColor
+                visible: !styleData.selected
+            }
+            Loader {
+                id: loaderEditor
+                anchors.fill: parent
+                anchors.margins: 4
+                Connections {
+                    target: loaderEditor.item
+                    onEditingFinished: {
+                        tableModel.setProperty(styleData.row, styleData.role, loaderEditor.item.text)
+                    }
+                }
+                sourceComponent: styleData.selected ? editor : null
+                Component {
+                    id: editor
+                    TextInput {
+                        id: textinput
+                        color: styleData.textColor
+                        text: styleData.value
+                        MouseArea {
+                            id: mouseArea
+                            anchors.fill: parent
+                            hoverEnabled: true
+                            onClicked: textinput.forceActiveFocus()
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+    TableView {
+        id: view
+        model: tableModel
+        anchors.bottom: addCollumn.top
+        anchors.right: parent.right
+        anchors.left: parent.left
+        anchors.top: parent.top
+        itemDelegate: {
+            return editableDelegate;
+        }
+
+    }
+
+
+    Button {
+        id: addCollumn
+        text:"Add new collumn"
+        anchors.right: parent.right
+        anchors.bottom: parent.bottom
+        onClicked: {
+            var rowsCount = view.rowCount-1;
+            for(rowsCount;rowsCount>=0;rowsCount--){
+                console.log(rowsCount)
+                tableModel.get(rowsCount)["role"+view.columnCount-1] = "test"+view.columnCount-1
+//                tableModel.setProperty(rowsCount,"role"+view.columnCount-1,"test"+view.columnCount-1)
+            }
+
+            var rowCount = view.rowCount
+            for(rowCount;rowCount>=0;rowCount--){
+                var count = view.columnCount-1
+                for(count;count>=0;count--){
+                    console.log(tableModel.get(count)["role"+count])
+                }
+                console.log("___________");
+
+            }
+            view.addColumn(columnComponent.createObject(view, {"role":"role"+view.columnCount, "title": "title"+view.columnCount}))
+        }
+    }
+
+    Button {
+        id: addRow
+        text:"Add new row"
+        anchors.rightMargin: 12
+        anchors.right: addCollumn.left
+        anchors.bottom: parent.bottom
+        onClicked: {
+            var newItem = {}
+            var count = view.columnCount-1
+            for(count;count>=0;count--){
+                newItem["role"+count]="test"+count
+            }
+            console.log("______")
+            tableModel.append(newItem)
+
+            var rowCount = view.rowCount
+            for(rowCount;rowCount>=0;rowCount--){
+                var count = view.columnCount-1
+                for(count;count>=0;count--){
+                    console.log(tableModel.get(count)["role"+count])
+                }
+                console.log("___________");
+
+            }
+        }
+    }
+
+}
+
