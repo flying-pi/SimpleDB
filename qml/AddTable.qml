@@ -29,6 +29,23 @@ Item {
         id:tableModel
     }
 
+    Component.onCompleted: {
+        var collumnsCount = tableData.get_column_count()
+        console.log(collumnsCount)
+        for (var i = 0; i < collumnsCount; i++)
+        {
+            console.log(i)
+            view.addColumn(columnComponent.createObject(view, {"role":view.columnCount, "title": tableData.get_column_name(i)}))
+        }
+        view.getColumn(0).width = 30
+
+        var rowsCount  = tableData.get_row_count()
+        for (var i = 0; i < rowsCount; i++)
+        {
+            tableModel.append({})
+        }
+    }
+
     Component {
         id: editableDelegate
         Item {
@@ -62,11 +79,15 @@ Item {
                         id: textinput
                         color: styleData.textColor
                         text: simpleText.text
+                        readOnly: styleData.role == '0'
                         MouseArea {
                             id: mouseArea
                             anchors.fill: parent
                             hoverEnabled: true
-                            onClicked: textinput.forceActiveFocus()
+                            onClicked:{
+                                if(styleData.role != '0')
+                                    textinput.forceActiveFocus()
+                            }
                         }
                     }
                 }
@@ -102,8 +123,8 @@ Item {
     function addNewColumn( columnType, columnName){
         console.log("on success call "+columnType+" name "+columnName)
 
-            tableData.add_column(columnType,columnName)
-            view.addColumn(columnComponent.createObject(view, {"role":view.columnCount, "title": columnName}))
+        tableData.add_column(columnType,columnName)
+        view.addColumn(columnComponent.createObject(view, {"role":view.columnCount, "title": columnName}))
     }
 
     Button {
@@ -112,9 +133,9 @@ Item {
         anchors.right: parent.right
         anchors.bottom: parent.bottom
         onClicked: {
-//            var dialog = createTableColumnDialog.createObject(db_editer)
-//            dialog.onSuccess.connect(addNewColumn)
-//            dialog.show()
+            //            var dialog = createTableColumnDialog.createObject(db_editer)
+            //            dialog.onSuccess.connect(addNewColumn)
+            //            dialog.show()
             addNewColumn(1,"coll"+view.columnCount)
         }
     }
