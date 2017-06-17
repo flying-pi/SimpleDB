@@ -21,6 +21,10 @@ Item {
         id: welcomeInfo
     }
 
+    TableEditModelCreator{
+        id:tableEditModelCreator
+    }
+
     Component{
         id:messaheDialogComponent
         MessageDialog {
@@ -42,7 +46,7 @@ Item {
         rootWindow.title = "All tables list"
     }
 
-    function insertNewDBTable(showError){
+    function insertNewDBTable(tableName){
         tables.append({name:tableName})
     }
 
@@ -97,8 +101,10 @@ Item {
             Button {
                 text:name
                 onClicked: {
-                   var editor = addTableViewComponent.createObject(stack,{tableName:name,rootWindow:rootWindow})
-                   stack.push(editor)
+                    var params = {tableName:name,rootWindow:rootWindow,
+                        tableData:tableEditModelCreator.get_table_editor(name)}
+                    var editor = addTableViewComponent.createObject(stack,params)
+                    stack.push(editor)
                 }
 
             }
@@ -116,7 +122,6 @@ Item {
         anchors.bottom: parent.bottom
         anchors.bottomMargin: 7
         onClicked: {
-            //            stack.push(addTableViewComponent.createObject(stack,{}))
             var dialog = createTableDialogComponent.createObject(null,{})
             dialog.onTableNameSelect.connect(createTable)
             dialog.open()

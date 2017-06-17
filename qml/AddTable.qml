@@ -10,6 +10,7 @@ Item {
     id: db_editer
     property string tableName: ""
     property Window rootWindow: null
+    property TableEditModel tableData: null
 
     Component
     {
@@ -23,17 +24,16 @@ Item {
         ListElement{}
     }
 
-    TableEditModel
-    {
-        id:tableData
-    }
-
     ListModel{
         id:tableModel
     }
 
+    Component{
+        id:tableDataCreator
+        TableEditModel{}
+    }
+
     Component.onCompleted: {
-        console.log("editing table :: "+ tableName)
         var collumnsCount = tableData.get_column_count()
         console.log(collumnsCount)
         for (var i = 0; i < collumnsCount; i++)
@@ -85,14 +85,13 @@ Item {
                         id: textinput
                         color: styleData.textColor
                         text: simpleText.text
-                        readOnly: styleData.role == '0'
+                        readOnly: tableData.is_readonly(styleData.role)
                         MouseArea {
                             id: mouseArea
                             anchors.fill: parent
                             hoverEnabled: true
                             onClicked:{
-                                if(styleData.role != '0')
-                                    textinput.forceActiveFocus()
+                                textinput.forceActiveFocus()
                             }
                         }
                     }
@@ -139,10 +138,9 @@ Item {
         anchors.right: parent.right
         anchors.bottom: parent.bottom
         onClicked: {
-            //            var dialog = createTableColumnDialog.createObject(db_editer)
-            //            dialog.onSuccess.connect(addNewColumn)
-            //            dialog.show()
-            addNewColumn(1,"coll"+view.columnCount)
+            var dialog = createTableColumnDialog.createObject(db_editer)
+            dialog.onSuccess.connect(addNewColumn)
+            dialog.show()
         }
     }
 

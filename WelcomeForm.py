@@ -11,7 +11,7 @@ class Welcome(QObject):
 
     def __init__(self, parent=None):
         super().__init__(parent)
-        self._exist_bd = TableManager().tables
+        self._exist_bd = TablesManager().tables
 
     @pyqtProperty('QStringList')
     def exist_bd(self):
@@ -20,11 +20,13 @@ class Welcome(QObject):
     @pyqtSlot(str)
     def add_item(self, name:str):
         name = name.lower()
+        if ' ' in name:
+            self.showError.emit("Name contains spacing")
         for i in self._exist_bd:
             if i == name:
                 self.showError.emit("already exist")
                 return
-        if not TableManager().add_item(name):
+        if not TablesManager().add_item(name):
             self.showError.emit("unknown error")
             return
         self.addTable.emit(name)
