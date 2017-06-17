@@ -2,15 +2,16 @@ import QtQuick 2.7
 import QtQuick.Controls 2.0
 import QtQuick.Layouts 1.0
 import QtQuick.Dialogs 1.2
+import QtQuick.Window 2.2
 
 import SimpleDB 1.0
 
 
 Item {
     id: welcomeForm
-
-    visible: true
     anchors.fill: parent
+
+    property Window rootWindow: null
 
     ListModel {
         id: tables
@@ -28,7 +29,6 @@ Item {
             title: "Error"
             Component.onCompleted: {
                 messaheDialog.text = itemText
-                console.log(itemText+"    in  Component.onCompleted")
             }
         }
     }
@@ -39,8 +39,7 @@ Item {
             tables.append({name:loadedData[i]})
         welcomeInfo.addTable.connect(insertNewDBTable)
         welcomeInfo.showError.connect(showError)
-
-
+        rootWindow.title = "All tables list"
     }
 
     function insertNewDBTable(showError){
@@ -97,7 +96,11 @@ Item {
         delegate: Component{
             Button {
                 text:name
-                anchors.bottomMargin: 0
+                onClicked: {
+                   var editor = addTableViewComponent.createObject(stack,{tableName:name,rootWindow:rootWindow})
+                   stack.push(editor)
+                }
+
             }
         }
     }

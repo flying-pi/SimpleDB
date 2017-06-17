@@ -2,11 +2,14 @@ import QtQuick 2.7
 import QtQuick.Controls 1.4
 import QtQuick.Layouts 1.0
 import QtQuick.Controls.Styles 1.4
+import QtQuick.Window 2.2
 
 import SimpleDB 1.0
 
 Item {
     id: db_editer
+    property string tableName: ""
+    property Window rootWindow: null
 
     Component
     {
@@ -30,6 +33,7 @@ Item {
     }
 
     Component.onCompleted: {
+        console.log("editing table :: "+ tableName)
         var collumnsCount = tableData.get_column_count()
         console.log(collumnsCount)
         for (var i = 0; i < collumnsCount; i++)
@@ -44,6 +48,8 @@ Item {
         {
             tableModel.append({})
         }
+
+        rootWindow.title = "Editing table `"+tableName+"`";
     }
 
     Component {

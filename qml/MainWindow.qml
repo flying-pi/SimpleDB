@@ -4,6 +4,7 @@ import QtQuick.Layouts 1.0
 
 
 ApplicationWindow {
+    id:mainWindow
     visible: true
     width: 640
     height: 480
@@ -45,7 +46,7 @@ ApplicationWindow {
             anchors.right: parent.right
             anchors.bottom: parent.bottom
             anchors.left: parent.left
-            initialItem: welcomeViewComponent.createObject(stack,{})
+            initialItem: welcomeViewComponent.createObject(stack,{rootWindow:mainWindow})
 //            initialItem: addTableViewComponent.createObject(stack,{})
         }
 
