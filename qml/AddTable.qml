@@ -1,6 +1,7 @@
 import QtQuick 2.7
 import QtQuick.Controls 1.4
 import QtQuick.Layouts 1.0
+import QtQuick.Controls.Styles 1.4
 
 import SimpleDB 1.0
 
@@ -28,19 +29,12 @@ Item {
         id:tableModel
     }
 
-    Component
-    {
-        id: createTableColumnDialog
-        CreateTableColumnDialog{
-            editInfo:tableData
-        }
-    }
-
     Component {
         id: editableDelegate
         Item {
 
             Text {
+                id:simpleText
                 width: parent.width
                 anchors.margins: 4
                 anchors.left: parent.left
@@ -57,7 +51,8 @@ Item {
                 Connections {
                     target: loaderEditor.item
                     onEditingFinished: {
-                    //TODO
+                        tableData.set_data(styleData.row, styleData.role,loaderEditor.item.text)
+                        simpleText.text = loaderEditor.item.text
                     }
                 }
                 sourceComponent: styleData.selected ? editor : null
@@ -66,7 +61,7 @@ Item {
                     TextInput {
                         id: textinput
                         color: styleData.textColor
-                        text: styleData.value
+                        text: simpleText.text
                         MouseArea {
                             id: mouseArea
                             anchors.fill: parent
@@ -90,8 +85,26 @@ Item {
             return editableDelegate;
         }
 
+        style: TableViewStyle{
+            highlightedTextColor: "#000"
+            textColor: "#111"
+        }
+
     }
 
+    Component
+    {
+        id: createTableColumnDialog
+
+        CreateTableColumnDialog{}
+    }
+
+    function addNewColumn( columnType, columnName){
+        console.log("on success call "+columnType+" name "+columnName)
+
+            tableData.add_column(columnType,columnName)
+            view.addColumn(columnComponent.createObject(view, {"role":view.columnCount, "title": columnName}))
+    }
 
     Button {
         id: addCollumn
@@ -99,11 +112,10 @@ Item {
         anchors.right: parent.right
         anchors.bottom: parent.bottom
         onClicked: {
-            tableData.add_column()
-            view.addColumn(columnComponent.createObject(view, {"role":""+view.columnCount, "title": "title"+view.columnCount}))
-
-            var dialog = createTableColumnDialog.createObject(db_editer)
-            dialog.show()
+//            var dialog = createTableColumnDialog.createObject(db_editer)
+//            dialog.onSuccess.connect(addNewColumn)
+//            dialog.show()
+            addNewColumn(1,"coll"+view.columnCount)
         }
     }
 

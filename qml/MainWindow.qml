@@ -31,7 +31,8 @@ ApplicationWindow {
             anchors.right: parent.right
             anchors.bottom: parent.bottom
             anchors.left: parent.left
-            initialItem: welcomeViewComponent.createObject(stack,{})
+//            initialItem: welcomeViewComponent.createObject(stack,{})
+            initialItem: addTableViewComponent.createObject(stack,{})
         }
 
         Component{

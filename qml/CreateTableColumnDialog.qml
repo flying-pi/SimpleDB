@@ -8,6 +8,17 @@ import SimpleDB 1.0
 
 
 Window {
+    id: createTableColumnDialog
+    title: "Adding new column"
+    maximumWidth: 450
+    maximumHeight: 175
+    minimumWidth: maximumWidth
+    minimumHeight: maximumHeight
+    flags: Qt.Dialog
+    modality: Qt.ApplicationModal
+
+    signal onCancel()
+    signal onSuccess(int columnType,string columnName)
 
     property TableEditModel editInfo
 
@@ -16,21 +27,18 @@ Window {
     }
 
     property variant comboboxTypes: [  ]
+    width: 550
+    height: 250
 
     Component.onCompleted: {
         var loadedData = columnInfo.column_types
-       comboboxTypes =loadedData
+        comboboxTypes =loadedData
+        createTableColumnDialog.closing.connect(onWindowClissing)
     }
 
-    id: mypopDialog
-    title: "Adding new column"
-    maximumWidth: 450
-    maximumHeight: 175
-    minimumWidth: maximumWidth
-    minimumHeight: maximumHeight
-    flags: Qt.Dialog
-    modality: Qt.ApplicationModal
-    property int popupType: 1
+    function onWindowClissing(info){
+        createTableColumnDialog.onCancel()
+    }
 
     ComboBox {
         id: columnType
@@ -42,6 +50,7 @@ Window {
         anchors.leftMargin: 20
         anchors.verticalCenter: text1.verticalCenter
         model: comboboxTypes
+        currentIndex: 0
         onCurrentIndexChanged:{
             console.log(currentIndex)
         }
@@ -63,17 +72,17 @@ Window {
         x: 2
         y: 2
         text: qsTr("Column name:")
-        anchors.topMargin: 20
+        anchors.topMargin: 40
         anchors.top: text1.bottom
         font.pixelSize: 16
-        anchors.leftMargin: 27
-        anchors.left: parent.left
+        anchors.leftMargin: 0
+        anchors.left: text1.left
     }
 
-    TextInput {
-        id: textInput
+    TextField {
+        id: collumnName
         y: 104
-        height: 20
+        height: 40
         text: qsTr("")
         anchors.right: columnType.right
         anchors.rightMargin: 0
@@ -83,10 +92,11 @@ Window {
         anchors.leftMargin: 0
         anchors.verticalCenter: text2.verticalCenter
         font.pixelSize: 12
+        placeholderText: "Column name"
     }
 
     Button {
-        id: button
+        id: createBtn
         x: 320
         y: 129
         text: qsTr("Create")
@@ -94,17 +104,25 @@ Window {
         anchors.bottomMargin: 31
         anchors.right: parent.right
         anchors.rightMargin: 30
+        onClicked: {
+            createTableColumnDialog.onSuccess(columnType.currentIndex,collumnName.text)
+            close()
+        }
     }
 
     Button {
-        id: button1
+        id: cancelBtn
         x: 313
         y: 137
-        text: qsTr("Create")
-        anchors.right: button.left
+        text: qsTr("Cancel")
+        anchors.right: createBtn.left
         anchors.rightMargin: 20
         anchors.bottomMargin: 31
         anchors.bottom: parent.bottom
+        onClicked: {
+            createTableColumnDialog.onCancel()
+            close()
+        }
     }
 }
 
