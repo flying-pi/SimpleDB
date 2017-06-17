@@ -23,6 +23,20 @@ ApplicationWindow {
                 width: parent.width
                 height: parent.height
             }
+
+            Button {
+                id: back_btn
+                text: qsTr("Back")
+                anchors.bottom: parent.bottom
+                anchors.bottomMargin: 10
+                anchors.top: parent.top
+                anchors.topMargin: 10
+                anchors.left: parent.left
+                anchors.leftMargin: 10
+                onClicked: {
+                    stack.pop()
+                }
+            }
         }
 
         StackView {
@@ -31,8 +45,8 @@ ApplicationWindow {
             anchors.right: parent.right
             anchors.bottom: parent.bottom
             anchors.left: parent.left
-//            initialItem: welcomeViewComponent.createObject(stack,{})
-            initialItem: addTableViewComponent.createObject(stack,{})
+            initialItem: welcomeViewComponent.createObject(stack,{})
+//            initialItem: addTableViewComponent.createObject(stack,{})
         }
 
         Component{
@@ -45,9 +59,6 @@ ApplicationWindow {
             id: addTableViewComponent
             AddTable{
             }
-        }
-        AddTable{
-            id: addTableView
         }
     }
 }

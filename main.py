@@ -4,9 +4,12 @@ from PyQt5.QtQml import QQmlApplicationEngine, qmlRegisterType
 from PyQt5.QtWidgets import QApplication
 
 from WelcomeForm import *
+from DB_Worker import *
 
 # Main Function
 if __name__ == '__main__':
+    open_bd()
+
     myApp = QApplication(sys.argv)
 
     qmlRegisterType(Welcome, 'SimpleDB', 1, 0, 'WelcomeInfo')

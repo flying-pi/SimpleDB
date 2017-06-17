@@ -1,18 +1,33 @@
-from PyQt5.QtCore import pyqtSlot, QVariant
+from PyQt5.QtCore import pyqtSlot, QVariant, pyqtSignal
 from PyQt5.QtQml import QQmlListProperty
 
 from DBItems import *
+from DB_Worker import *
 
 
 class Welcome(QObject):
+    addTable = pyqtSignal(str)
+    showError = pyqtSignal(str)
+
     def __init__(self, parent=None):
         super().__init__(parent)
-        self._exist_bd = [DBInfoView("test1"), DBInfoView("test2")]
+        self._exist_bd = TableManager().tables
 
-    @pyqtProperty(QQmlListProperty)
+    @pyqtProperty('QStringList')
     def exist_bd(self):
-        return QQmlListProperty(DBInfoView, self, self._exist_bd)
+        return self._exist_bd
 
-    @pyqtSlot(QVariant)
-    def add_item(self, name):
-        print(name)
+    @pyqtSlot(str)
+    def add_item(self, name:str):
+        name = name.lower()
+        for i in self._exist_bd:
+            if i == name:
+                self.showError.emit("already exist")
+                return
+        if not TableManager().add_item(name):
+            self.showError.emit("unknown error")
+            return
+        self.addTable.emit(name)
+
+
+
