@@ -4,15 +4,14 @@ from PyQt5.QtCore import QUrl
 from PyQt5.QtQml import QQmlApplicationEngine, qmlRegisterType
 from PyQt5.QtWidgets import QApplication
 
-from DB_Worker import *
 from WelcomeForm import *
+
 
 # Main Function
 if __name__ == '__main__':
     TablesManager()  # need for open db
 
     # test = Table("car")
-
 
     myApp = QApplication(sys.argv)
 

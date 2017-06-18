@@ -37,6 +37,13 @@ Item {
         }
     }
 
+    TextField {
+        id: textField
+        x: 203
+        y: 207
+        text: qsTr("Text Field")
+    }
+
     Component.onCompleted: {
         var loadedData =  welcomeInfo.exist_bd
         for(var i =0;i<loadedData.length;i++)
@@ -44,6 +51,8 @@ Item {
         welcomeInfo.addTable.connect(insertNewDBTable)
         welcomeInfo.showError.connect(showError)
         rootWindow.title = "All tables list"
+
+        welcomeInfo.testik(textField)
     }
 
     function insertNewDBTable(tableName){
@@ -110,6 +119,7 @@ Item {
             }
         }
     }
+
 
 
     Button {

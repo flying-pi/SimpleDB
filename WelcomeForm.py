@@ -1,5 +1,5 @@
 from PyQt5.QtCore import pyqtSlot, QVariant, pyqtSignal
-from PyQt5.QtQml import QQmlListProperty
+from PyQt5.QtQml import QQmlListProperty, QQmlComponent
 
 from DBItems import *
 from DB_Worker import *
@@ -30,6 +30,7 @@ class Welcome(QObject):
             self.showError.emit("unknown error")
             return
         self.addTable.emit(name)
+
 
 
 

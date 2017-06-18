@@ -7,10 +7,12 @@ import QtQuick.Controls 2.1
 import QtQuick.Dialogs 1.2
 import QtQuick 2.2
 import QtQuick.Window 2.2
+import QtGraphicalEffects 1.0
 
 
 Item {
     id: db_editer
+    anchors.fill: parent
 
     ListModel{
         id:requestListModel
@@ -22,7 +24,7 @@ Item {
         }
     }
 
-    function showError(title,message){
+    function showMessahe(title,message){
         var dialog = messaheDialogComponent.createObject(null,{title:title,text: message})
         dialog.open();
     }
@@ -33,17 +35,34 @@ Item {
     Component{
         id:createRequestDialogComponent
         Dialog {
-            width: 350
-            height: 175
             id: createRequestDialog
+            width: 400
+            height: 250
             title: "Create request"
-            standardButtons: StandardButton.Ok | StandardButton.Cancel
+            standardButtons: StandardButton.Ok | StandardButton.Cancel | StandardButton.Help
             signal onRequestCreated(string requestAlias,string requestBody)
 
             ColumnLayout {
                 width: parent.width
                 height: parent.height/2
                 spacing: 7
+
+                Text {
+                    id: reauestDialogHelp
+                    width: createRequestDialog
+                    text:
+                        "Запит може містити змінні, котрі вносятся в нього \n\
+наступним чином: {var_name=default_value}. \n\
+var_name - ім'я змінної, повино починатись з літери \n\
+і містити лише символи латинського алфавіту та цифри. \n\
+default_value - значення за умвченням.\n\
+default_value пишется через знак рівності \n\
+і не є обов'язковим"
+                    font.pointSize: 12
+                    wrapMode: Text.WordWrap
+                    visible: false
+                }
+
                 TextField {
                     id: requestName
                     height: 20
@@ -61,7 +80,9 @@ Item {
             }
 
             onButtonClicked: {
-                if (clickedButton == StandardButton.Ok && requestName.text.length>0 && requestContent.text.length>0 )
+                if(clickedButton == StandardButton.Help){
+                    reauestDialogHelp.visible = !reauestDialogHelp.visible
+                }else if (clickedButton == StandardButton.Ok && requestName.text.length>0 && requestContent.text.length>0 )
                     createRequestDialog.onRequestCreated(requestName.text,requestContent.text)
             }
 
@@ -76,12 +97,23 @@ Item {
         for(var i=0;i<requestListModel.count;i++){
             console.log(requestAlias(requestListModel.get(i)))
             if(requestAlias(requestListModel.get(i)) == reqAlias){
-                showError("error","this request have not unique name")
+                showMessahe("Error","this request have not unique name")
                 return;
             }
         }
         requestListModel.append({requestAlias:reqAlias,requestBody:reqBody})
         requestListView.update()
+    }
+
+    Rectangle {
+        id: componentBox
+        width: 200
+        color: "#009dff"
+        border.color: "#00000000"
+        anchors.bottom: parent.bottom
+        anchors.bottomMargin: 0
+        anchors.top: parent.top
+        anchors.topMargin: 0
     }
 
     Rectangle{
@@ -91,7 +123,7 @@ Item {
         anchors.bottomMargin: 0
         anchors.right: parent.right
         anchors.rightMargin: 0
-        anchors.left: parent.left
+        anchors.left: componentBox.right
         anchors.leftMargin: 0
         anchors.top: parent.top
         anchors.topMargin: 0
@@ -101,13 +133,12 @@ Item {
 
     Rectangle{
         id:toolBack
-        y: 330
         height: 200
         color: "#f9f6f6"
         border.color: "#000000"
         anchors.right: parent.right
         anchors.rightMargin: 0
-        anchors.left: parent.left
+        anchors.left: componentBox.right
         anchors.leftMargin: 0
         anchors.bottom: parent.bottom
         anchors.bottomMargin: 0
@@ -146,15 +177,21 @@ Item {
                 spacing: 7
 
                 delegate: Rectangle {
-                    color: "#f5f5f5"
-                    border.color: "#00b5b5b5"
-                    border.width: 3
-                    height: 40
+                    id:requestListItem
+                    color: "#e1e1fd"
+                    border.color: "#7c8088"
+                    border.width: 4
+                    height: 55
                     width: requestListScroll.width
+
                     RowLayout {
+                        anchors.margins: 7
+                         anchors.verticalCenter: requestListItem.verticalCenter
                         id: rowLayout
                         width: requestListScroll.width
                         Text {
+                        anchors.left: parent.left
+                            anchors.leftMargin: 16
                             id: text1
                             text: qsTr("#")
                             font.pixelSize: 16
@@ -168,8 +205,11 @@ Item {
 
                         Text {
                             id: alias
+                            color: "#424242"
                             text: requestAlias
-                            font.pixelSize: 16
+                            font.bold: true
+                            font.pixelSize: 14
+                            anchors.rightMargin: 15
                         }
 
                         Text {
@@ -180,6 +220,9 @@ Item {
                         }
 
                         Button {
+                            anchors.right: parent.right
+                            anchors.rightMargin: 16
+                            anchors.verticalCenter: requestListItem.verticalCenter
                             id: deleteBtn
                             text: qsTr("Remove")
                         }
@@ -193,27 +236,31 @@ Item {
     }
 
     Rectangle{
-        id:moveLine
-        width: parent.width
-        height: 5
-        color: "black"
+        id:workToolMove
+        height: 20
+        anchors.right: parent.right
+        anchors.rightMargin: 0
+        anchors.left: componentBox.right
+        anchors.leftMargin: 0
+        anchors.bottom: toolBack.top
+        anchors.bottomMargin: -10
+
         gradient: Gradient {
             GradientStop {
                 position: 0.00;
-                color: "#00ffffff";
+                color: "#22ffffff";
             }
             GradientStop {
                 position: 0.50;
-                color: "#55aaaaaa";
+                color: "#99aaaaaa";
             }
             GradientStop {
                 position: 1.00;
-                color: "#00ffffff";
+                color: "#22ffffff";
             }
         }
-        anchors.bottom: toolBack.top
-        anchors.bottomMargin: 0
         MouseArea {
+            anchors.rightMargin: 0
             cursorShape: Qt.SizeVerCursor
             anchors.fill: parent
             drag{ target: parent; axis: Drag.YAxis }
@@ -226,5 +273,31 @@ Item {
             }
         }
     }
+
+    Rectangle{
+        id:horizontalSplit1
+        width: 20
+        color: "#00000000"
+        anchors.bottom: parent.bottom
+        anchors.bottomMargin: 0
+        anchors.top: parent.top
+        anchors.topMargin: 0
+        anchors.left: componentBox.right
+        anchors.leftMargin: -10
+
+        MouseArea {
+            anchors.rightMargin: 0
+            cursorShape: Qt.Horizontal
+            anchors.fill: parent
+            drag{ target: parent; axis: Drag.XAxis }
+            drag.smoothed: true
+            onMouseXChanged: {
+                if(drag.active){
+                    componentBox.width += mouseX
+                }
+            }
+        }
+    }
+
 }
 
