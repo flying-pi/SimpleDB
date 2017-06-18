@@ -85,7 +85,7 @@ Item {
                 createTableDialog.forceActiveFocus()
                 tableName.forceActiveFocus()
             }
-            
+
         }
     }
 

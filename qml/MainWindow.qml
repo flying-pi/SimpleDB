@@ -6,8 +6,8 @@ import QtQuick.Layouts 1.0
 ApplicationWindow {
     id:mainWindow
     visible: true
-    width: 640
-    height: 480
+    width: 900
+    height: 650
     title: qsTr("Welcome")
     Column{
         id: column
@@ -43,11 +43,11 @@ ApplicationWindow {
         StackView {
             id: stack
             anchors.top: topBar.bottom
-            anchors.right: parent.right
             anchors.bottom: parent.bottom
-            anchors.left: parent.left
-            initialItem: welcomeViewComponent.createObject(stack,{rootWindow:mainWindow})
-//            initialItem: addTableViewComponent.createObject(stack,{})
+            width: mainWindow.width
+            //            initialItem: welcomeViewComponent.createObject(stack,{rootWindow:mainWindow})
+            initialItem: createFormComponent.createObject(stack,{rootWindow:mainWindow})
+            //            initialItem: addTableViewComponent.createObject(stack,{})
         }
 
         Component{
@@ -59,6 +59,12 @@ ApplicationWindow {
         Component{
             id: addTableViewComponent
             AddTable{
+            }
+        }
+
+        Component{
+            id: createFormComponent
+            CreateForm{
             }
         }
     }
