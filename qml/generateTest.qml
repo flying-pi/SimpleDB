@@ -25,14 +25,13 @@ Window {
     FormBackend{
         id:backend
         requests:[{name:"cars",body:"./cars.sql"}]
-        elements:[{name:"carsTable",eID:"0",program:"Init:
-  value=cars"}] 
-        guiElements:[element0]
-    }
+        elements:[{name: "carsTable",eID: "0",program: "Init:
+  value=cars",ui: element0}]
+     }
 
     function getData(eID)
     {
-        backend.updateData(eID);
+        return backend.updateData(eID);
     }
 
     Component.onCompleted: {
@@ -51,6 +50,14 @@ Window {
         y:20.96484375
         width:402.796875
         height:229.6953125
+        objectName:'carsTable'
+
+        Component
+        {
+            id: tableComponent
+            ListModel{ }
+        }
+        model:tableComponent.createObject(element0,{})
 
         TableViewColumn {
             role: '0'
@@ -72,7 +79,12 @@ Window {
 
         function update()
         {
-            model:getData(0)
+            console.log("ping from qt")
+            model.clear()
+            var newData = getData(0)
+            console.log(newData)
+            for(var i=0;i<newData.length;i++)
+                model.append(newData[i])
         }
     }
 

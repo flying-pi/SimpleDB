@@ -38,6 +38,20 @@ ApplicationWindow {
                     stack.pop()
                 }
             }
+
+            Button {
+                id: create_form_btn
+                text: qsTr("Create form")
+                anchors.bottom: parent.bottom
+                anchors.bottomMargin: 10
+                anchors.top: parent.top
+                anchors.topMargin: 10
+                anchors.left: back_btn.right
+                anchors.leftMargin: 10
+                onClicked: {
+                    stack.push(createFormComponent.createObject(stack,{rootWindow:mainWindow}))
+                }
+            }
         }
 
         StackView {
@@ -45,22 +59,22 @@ ApplicationWindow {
             anchors.top: topBar.bottom
             anchors.bottom: parent.bottom
             width: mainWindow.width
-            //            initialItem: welcomeViewComponent.createObject(stack,{rootWindow:mainWindow})
-            initialItem: createFormComponent.createObject(stack,{rootWindow:mainWindow})
+            initialItem: welcomeViewComponent.createObject(stack,{rootWindow:mainWindow})
+            //            initialItem: createFormComponent.createObject(stack,{rootWindow:mainWindow})
             //            initialItem: addTableViewComponent.createObject(stack,{})
         }
 
-//        Component{
-//            id: welcomeViewComponent
-//            Welcome{
-//            }
-//        }
+        Component{
+            id: welcomeViewComponent
+            Welcome{
+            }
+        }
 
-//        Component{
-//            id: addTableViewComponent
-//            AddTable{
-//            }
-//        }
+        Component{
+            id: addTableViewComponent
+            AddTable{
+            }
+        }
 
         Component{
             id: createFormComponent

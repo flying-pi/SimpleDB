@@ -3,6 +3,7 @@ from typing import Tuple, List
 from PyQt5.QtSql import QSqlDatabase, QSqlQuery, QSqlTableModel, QSqlField
 
 from DBItems import *
+from DB_Utils import open_bd
 
 
 def contains_table(db: QSqlDatabase, table_name: str) -> bool:
@@ -16,8 +17,8 @@ def contains_table(db: QSqlDatabase, table_name: str) -> bool:
 def make_request(request: str) -> Tuple[bool, QSqlQuery]:
     print("Execution request: ", request)
     query = QSqlQuery()
-    create_table_result = query.exec(request)
-    if not create_table_result:
+    query_result = query.exec(request)
+    if not query_result:
         print("error when execution request; ", "request :: ", request, " error :: ",
               query.lastError().databaseText())
         return False, query
@@ -49,24 +50,11 @@ class TablesManager(metaclass=SingletonTM):
     TABLE_NAME = "simple_db_tables_names"
 
     def __init__(self) -> None:
-        self._parent_db = self.open_bd()
+        self._parent_db = open_bd()
         super().__init__()
         if not contains_table(self._parent_db, self.TABLE_NAME):
             self.create_table()
         self._tables = self.load_all_tables()
-
-    def open_bd(self) -> QSqlDatabase:
-        db = QSqlDatabase.addDatabase("QPSQL")
-        db.setHostName("localhost")
-        db.setDatabaseName("postgres")
-        open_result = db.open()
-        if not open_result:
-            print("Can not open database :: ", db.lastError())
-            raise Exception("can not open database")
-        else:
-            print("DB opened")
-        global table_manager
-        return db
 
     def create_table(self):
         make_request(f'CREATE TABLE {self.TABLE_NAME}  (id SERIAL, name varchar UNIQUE );')

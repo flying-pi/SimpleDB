@@ -13,13 +13,22 @@ import QtGraphicalEffects 1.0
 Item {
     /**END_UTIL**/
 
-
+//todo change to binding
     TableView{
         id:element/**elementID**/ /***/
         x:/**X**/10/***/
         y:/**Y**/10/***/
         width:/**W**/100/***/
         height:/**H**/200/***/
+        objectName:"/**name**/ /***/"
+
+        Component
+        {
+            id: tableComponent
+             ListModel{ }
+        }
+        model:tableComponent.createObject(element/**elementID**/ /***/,{})
+
 
         /**Collumns**/
         TableViewColumn {
@@ -32,11 +41,15 @@ Item {
             title: "Author"
             width: 200
         }
+
         /***/
 
         function update()
         {
-            model:getData(/**elementID**/0/***/)
+            model.clear()
+            var newData = getData(/**elementID**/0/***/)
+            for(var i=0;i<newData.length;i++)
+                model.append(newData[i])
         }
     }
 

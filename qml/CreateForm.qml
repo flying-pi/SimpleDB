@@ -56,6 +56,75 @@ Item {
         }
     }
 
+    function generateSourceCode(){
+        const regex = /\/\*\*insert\*\*\/[\s\S]*?\/\*\*\*\//g;
+        var source = getSourceForComponent("mainWindow")
+        var components = "";
+        var w =0
+        var h = 0;
+        for(var i =0;i<stateInfo.length;i++)
+        {
+            var element = stateInfo[i]
+            if((element.width+element.x)>w)
+                w = element.width+element.x
+            if((element.height+element.y)>h)
+                h = element.height+element.y
+            components+=element.insertInSourceInfo();
+            components+="\n\n";
+        }
+        w+=25
+        h+=25
+
+        source = source.replace(regex,components)
+
+        const Wregex = /\/\*\*W\*\*\/[\s\S]*?\/\*\*\*\//g;
+        const Hregex = /\/\*\*H\*\*\/[\s\S]*?\/\*\*\*\//g;
+
+        source = source.replace(Wregex,''+w|0)
+        source = source.replace(Hregex,''+h|0)
+
+        var requestStr = getAllRequestAsString();
+        console.log(requestStr)
+
+        var items = allElementsApiAsString();
+        console.log(items)
+
+        const requestRegex = /\/\*\*requests\*\*\/[\s\S]*?\/\*\*\*\//g;
+        const elementsRegex = /\/\*\*elements\*\*\/[\s\S]*?\/\*\*\*\//g;
+
+        source = source.replace(requestRegex,requestStr)
+        source = source.replace(elementsRegex,items)
+
+        while(source.includes('/*--'))
+            source = source.replace('/*--','')
+
+        while(source.includes('--*/'))
+            source = source.replace('--*/','')
+
+        while(source.includes('\n\n\n'))
+            source = source.replace('\n\n\n','\n\n')
+        return source;
+    }
+
+
+    Component{
+        id:createFileDialogComponent
+
+        FileDialog {
+            id: fileDialog
+            title: "Please choose a file"
+            signal onSuccess(var filePath)
+            selectFolder: true
+            onAccepted: {
+                onSuccess(fileDialog.folder)
+            }
+            onRejected: {
+                console.log("Canceled")
+            }
+            Component.onCompleted: visible = true
+        }
+    }
+
     Component{
         id:inserdetTable
         TableView{
@@ -456,8 +525,8 @@ Item {
             if(i>0)
                 result+=',\n'
             var sqlFilePath = helper.save_sql_to_file(
-                                requestListModel.get(i).requestAlias,
-                                requestListModel.get(i).requestBody)
+                        requestListModel.get(i).requestAlias,
+                        requestListModel.get(i).requestBody)
             result+='{name:"'+requestListModel.get(i).requestAlias+'",'
             result+='body:"' + sqlFilePath +'"'
             result+='}'
@@ -473,9 +542,10 @@ Item {
                 result+=',\n'
 
 
-            result+='{name:"' + stateInfo[i].name + '",'
-            result+='eID:"' + stateInfo[i].eID +'",'
-            result+='program:"' + stateInfo[i].program +'"'
+            result+='{name: "' + stateInfo[i].name + '",'
+            result+='eID: "' + stateInfo[i].eID +'",'
+            result+='program: "' + stateInfo[i].program +'",'
+            result+='ui: element' + stateInfo[i].eID +''
             result+='}'
         }
         result+=']'
@@ -849,69 +919,30 @@ default_value пишется через знак рівності \n\
             anchors.leftMargin: 10
             text: "Preview"
             onClicked: {
-                const regex = /\/\*\*insert\*\*\/[\s\S]*?\/\*\*\*\//g;
-                var source = getSourceForComponent("mainWindow")
-                var components = "";
-                var w =0
-                var h = 0;
-                for(var i =0;i<stateInfo.length;i++)
-                {
-                    var element = stateInfo[i]
-                    if((element.width+element.x)>w)
-                        w = element.width+element.x
-                    if((element.height+element.y)>h)
-                        h = element.height+element.y
-                    components+=element.insertInSourceInfo();
-                    components+="\n\n";
-                }
-
-                source = source.replace(regex,components)
-
-                const Wregex = /\/\*\*W\*\*\/[\s\S]*?\/\*\*\*\//g;
-                const Hregex = /\/\*\*H\*\*\/[\s\S]*?\/\*\*\*\//g;
-
-                source = source.replace(Wregex,''+w|0)
-                source = source.replace(Hregex,''+h|0)
-
-                var requestStr = getAllRequestAsString();
-                console.log(requestStr)
-
-                var items = allElementsApiAsString();
-                console.log(items)
-
-                const requestRegex = /\/\*\*requests\*\*\/[\s\S]*?\/\*\*\*\//g;
-                const elementsRegex = /\/\*\*elements\*\*\/[\s\S]*?\/\*\*\*\//g;
-
-                source = source.replace(requestRegex,requestStr)
-                source = source.replace(elementsRegex,items)
-
-                while(source.includes('/*--'))
-                    source = source.replace('/*--','')
-
-                while(source.includes('--*/'))
-                    source = source.replace('--*/','')
-
-                while(source.includes('\n\n\n'))
-                    source = source.replace('\n\n\n','\n\n')
-
-                var views = '['
-                for(var i=0;i<stateInfo.length;i++){
-                    if(i>0)
-                        views+=', '
-                    views+='element'
-                    views+=stateInfo[i].eID
-                }
-                views+='] '
-                const viewsRegex = /\/\*\*views\*\*\/[\s\S]*?\/\*\*\*\//g;
-                source = source.replace(viewsRegex,views)
-
-
+                var source = generateSourceCode();
 
 
                 console.log(source)
                 helper.seave_generated_source(source)
                 var component =  Qt.createQmlObject(source,mainWindow,"/Users/yurabraiko/dev/python/SimpleDB/qml/dsdsd.gml");
                 component.show()
+            }
+        }
+
+        Button {
+            id: save_project
+            anchors.left: previewResult.right
+            anchors.top: previewResult.top
+            anchors.bottom: previewResult.bottom
+            anchors.leftMargin: 10
+            text: save
+            onClicked: {
+                var dialog = createFileDialogComponent.createObject(db_editer,{})
+                dialog.onSuccess.connect(function(filePath){
+                    var source = generateSourceCode();
+                    helper.save_as_project(filePath,source);
+                })
+                dialog.open()
             }
         }
 

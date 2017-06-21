@@ -29,12 +29,11 @@ Window {
         id:backend
         requests:/**requests**/ /***/ /*--
         elements:/**elements**/ /***/ /*--
-        guiElements:/**views**/ /***/ /*--
      }
 
     function getData(eID)
     {
-        backend.updateData(eID);
+       return backend.updateData(eID);
     }
 
 

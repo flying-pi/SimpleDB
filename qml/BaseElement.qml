@@ -58,6 +58,7 @@ QtObject {
         const Yregex = /\/\*\*Y\*\*\/[\s\S]*?\/\*\*\*\//g;
         const Wregex = /\/\*\*W\*\*\/[\s\S]*?\/\*\*\*\//g;
         const Hregex = /\/\*\*H\*\*\/[\s\S]*?\/\*\*\*\//g;
+        const NameRegex = /\/\*\*name\*\*\/[\s\S]*?\/\*\*\*\//g;
         const IDregex = /\/\*\*elementID\*\*\/[\s\S]*?\/\*\*\*\//g;
         const regexUtil = /\/\*\*BEGIN_UTIL\*\*\/[\s\S]*?\/\*\*END_UTIL\*\*\//g;
         return source
@@ -66,6 +67,7 @@ QtObject {
         .replace(Wregex,''+width)
         .replace(Hregex,''+height)
         .replace(IDregex,''+eID)
+        .replace(NameRegex,''+name)
         .replace(regexUtil,'');
     }
 }

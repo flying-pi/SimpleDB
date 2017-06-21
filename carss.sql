@@ -1,0 +1,1 @@
+select carname, speed,color from car

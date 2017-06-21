@@ -26,6 +26,7 @@ if __name__ == '__main__':
 
     appLabel = QQmlApplicationEngine()
     appLabel.load(QUrl('qml/MainWindow.qml'))
+    # appLabel.load(QUrl('qml/generateTest.qml'))
 
     # Execute the Application and Exit
     myApp.exec_()
