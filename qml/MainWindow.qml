@@ -50,17 +50,17 @@ ApplicationWindow {
             //            initialItem: addTableViewComponent.createObject(stack,{})
         }
 
-        Component{
-            id: welcomeViewComponent
-            Welcome{
-            }
-        }
+//        Component{
+//            id: welcomeViewComponent
+//            Welcome{
+//            }
+//        }
 
-        Component{
-            id: addTableViewComponent
-            AddTable{
-            }
-        }
+//        Component{
+//            id: addTableViewComponent
+//            AddTable{
+//            }
+//        }
 
         Component{
             id: createFormComponent
