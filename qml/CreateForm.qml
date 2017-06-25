@@ -935,7 +935,7 @@ default_value пишется через знак рівності \n\
             anchors.top: previewResult.top
             anchors.bottom: previewResult.bottom
             anchors.leftMargin: 10
-            text: save
+            text: "save"
             onClicked: {
                 var dialog = createFileDialogComponent.createObject(db_editer,{})
                 dialog.onSuccess.connect(function(filePath){
